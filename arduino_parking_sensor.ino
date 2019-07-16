@@ -101,10 +101,7 @@ void red_led() {
 }
 
 void stopp() {
-  for(int i=0; i < pixleCount; i++) {
-    pixelShield.setPixelColor(i, pixelShield.Color(127,0,0));
-  }
-  pixelShield.show();
+  red_led();
   delay(50);
   off();
 }
