@@ -12,10 +12,6 @@
 #define TRIGGER_PIN  11
 #define ECHO_PIN     12
 
-// LED brightness
-#define LED_DEFAULT_BRIGHTNESS 30
-#define LED_WARNING_BRIGHTNESS 127
-
 // distance measurement limits
 #define MAX_DISTANCE 200
 #define GREEN_MIN    46
