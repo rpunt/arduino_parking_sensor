@@ -92,18 +92,15 @@ void light_led(int color, int brightness {
   int red = 0; int green = 0; int blue = 0;
   
   switch (color) { 
-    case 1: 
-      // green
+    case 1: // green
       green = brightness; 
       break; 
-    case 2: 
-      // yellow
+    case 2: // yellow
       red = brightness;
       green = brightness;
       break; 
-    case 3: 
-      // red
-      red = 0;
+    case 3: // red
+      red = brightness;
       break; 
     default: 
       break;   
