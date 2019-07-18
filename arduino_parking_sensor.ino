@@ -1,3 +1,4 @@
+
 #include <NewPing.h>
 
 #include <Adafruit_NeoPixel.h>
@@ -80,7 +81,7 @@ void loop() {
 //----------
 // FUNCTIONS
 //----------
-void light_led(int color, int brightness {
+void light_led(int color, int brightness) {
   // OFF    0
   // GREEN  1
   // YELLOW 2
