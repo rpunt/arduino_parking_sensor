@@ -19,7 +19,7 @@
 #define YELLOW_MAX   45
 #define YELLOW_MIN   40
 #define RED_MAX      39
-#define RED_MIN      35
+#define RED_MIN      36
 
 // set color shortcuts for LED lighting
 #define OFF    0
@@ -68,10 +68,10 @@ void loop() {
   else if (distance <= YELLOW_MAX  && distance >= YELLOW_MIN) {
     light_led(YELLOW,50);
   }
-  else if (distance <= RED_MAX && distance > RED_MIN) {
+  else if (distance <= RED_MAX && distance >= RED_MIN) {
     light_led(RED,50);
   }
-  else if (distance <= RED_MIN) {
+  else if (distance < RED_MIN) {
     stopp();
   }
   else {
