@@ -59,12 +59,13 @@ void loop() {
   delay(50);
 
   distance = (sonar.ping_in());
+  
   Serial.println(distance);
 
-  if (distance > GREEN_MIN) {
+  if (distance >= GREEN_MIN) {
     light_led(GREEN,30);
   }
-  else if (distance <= YELLOW_MAX  && distance > YELLOW_MIN) {
+  else if (distance <= YELLOW_MAX  && distance >= YELLOW_MIN) {
     light_led(YELLOW,50);
   }
   else if (distance <= RED_MAX && distance > RED_MIN) {
@@ -102,7 +103,7 @@ void light_led(int color, int brightness) {
     default: 
       break;   
   } 
-  for(int i=0; i < pixleCount; i++) {
+  for(int i = 0; i < pixleCount; i++) {
     pixelShield.setPixelColor(i, pixelShield.Color(red,green,blue));
   }
   pixelShield.show();
