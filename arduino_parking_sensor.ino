@@ -6,29 +6,29 @@
 #include <avr/power.h>
 #endif
 
-//--------
-// DEFINES
-//--------
+//-----------
+// Pin setups
+//-----------
 // ultrasonic sensor setup
 #define TRIGGER_PIN  11
 #define ECHO_PIN     12
 
-// distance measurement limits
-#define MAX_DISTANCE 200
-#define GREEN_MIN    46
-#define YELLOW_MAX   45
-#define YELLOW_MIN   40
-#define RED_MAX      39
-#define RED_MIN      36
-
-// set color shortcuts for LED lighting
-#define OFF    0
-#define GREEN  1
-#define YELLOW 2
-#define RED    3
-
 // initialize the LED shield
 #define LED_DRIVER_PIN 13
+
+// distance measurement limits
+const int MAX_DISTANCE = 200;
+const int GREEN_MIN    = 46;
+const int YELLOW_MAX   = 45;
+const int YELLOW_MIN   = 40;
+const int RED_MAX      = 39;
+const int RED_MIN      = 36;
+
+// set color shortcuts for LED lighting
+const int OFF    = 0;
+const int GREEN  = 1;
+const int YELLOW = 2;
+const int RED    = 3;
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
