@@ -56,6 +56,8 @@ NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 int duration = 0;
 // distance in CM as calculated from the rangefinder
 int distance = 0;
+// number of pings to measure for the input smoother
+int iterations = 5;
 
 int pixleCount = pixelShield.numPixels();
 
@@ -69,9 +71,11 @@ void setup() {
 }
 
 void loop() {
-  delay(50);
+  delay(100);
 
-  distance = (sonar.ping_in());
+  duration = sonar.ping_median(iterations);
+  // convert duration measurement to CM
+  distance = sonar.convert_cm(duration);
 
 #ifdef DEBUG
   Serial.println(distance);
