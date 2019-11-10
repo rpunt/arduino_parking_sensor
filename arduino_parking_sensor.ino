@@ -47,9 +47,6 @@ const int RED    = 3;
 */
 Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel(40, LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
 
-//--------------
-// LIBRARY CALLS
-//--------------
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
 // time-of-flight measurement from the rangefinder
@@ -81,13 +78,16 @@ void loop() {
   Serial.println(distance);
 #endif
 
-  if (distance >= GREEN_MIN) {
+  if (distance > GREEN_MAX) {
+    off();
+  }
+  else if (distance >= GREEN_MIN) {
     light_led(GREEN, 5);
   }
-  else if (distance <= YELLOW_MAX && distance >= YELLOW_MIN) {
+  else if (distance < GREEN_MIN && distance >= YELLOW_MIN) {
     light_led(YELLOW, 10);
   }
-  else if (distance <= RED_MAX && distance >= RED_MIN) {
+  else if (distance < YELLOW_MIN && distance >= RED_MIN) {
     light_led(RED, 10);
   }
   else if (distance < RED_MIN) {
@@ -107,12 +107,6 @@ void loop() {
   Brightness: 1-255
 */
 void light_led(int color, int brightness) {
-  /* color shortcuts
-    OFF    0
-    GREEN  1
-    YELLOW 2
-    RED    3
-  */
   int red = 0; int green = 0; int blue = 0;
 
   switch (color) {
@@ -138,7 +132,7 @@ void light_led(int color, int brightness) {
 /* Flash red, rapidly */
 void stopp() {
   light_led(RED, 30);
-  delay(50);
+  delay(100);
   off();
 }
 
