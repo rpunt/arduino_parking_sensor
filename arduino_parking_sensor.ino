@@ -30,13 +30,18 @@
 // initialize the LED shield
 #define LED_DRIVER_PIN 13
 
-// Parameter 1 = number of pixels in strip
-// Parameter 2 = Arduino pin number (most are valid)
-// Parameter 3 = pixel type flags, add together as needed:
-//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
-//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
-//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
-//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
+/* setup params for the pixelshield
+  Parameter 1 = number of pixels in strip
+  Parameter 2 = Arduino pin number (most are valid)
+  Parameter 3 = pixel type flags, add together as needed:
+    NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
+    NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
+    NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
+    NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
+
+  Example syntax:
+    Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel(40, LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
+*/
 Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel(40, LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
 
 //--------------
@@ -65,7 +70,7 @@ void loop() {
   if (distance >= GREEN_MIN) {
     light_led(GREEN,30);
   }
-  else if (distance <= YELLOW_MAX  && distance >= YELLOW_MIN) {
+  else if (distance <= YELLOW_MAX && distance >= YELLOW_MIN) {
     light_led(YELLOW,50);
   }
   else if (distance <= RED_MAX && distance >= RED_MIN) {
@@ -83,10 +88,12 @@ void loop() {
 // FUNCTIONS
 //----------
 void light_led(int color, int brightness) {
-  // OFF    0
-  // GREEN  1
-  // YELLOW 2
-  // RED    3
+  /* color shortcuts
+    OFF    0
+    GREEN  1
+    YELLOW 2
+    RED    3
+  */
   int red = 0; int green = 0; int blue = 0;
   
   switch (color) { 
