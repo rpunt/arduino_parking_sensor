@@ -6,7 +6,7 @@
 #include <avr/power.h>
 #endif
 
-//#define DEBUG
+// #define DEBUG
 
 //-----------
 // Pin setups
@@ -90,9 +90,14 @@ void loop() {
   }
 }
 
-//----------
-// FUNCTIONS
-//----------
+/* Set the color for the pixelshield
+  Colors:
+    OFF   : 0
+    GREEN : 1
+    YELLOW: 2
+    RED   : 3
+  Brightness: 1-255
+*/
 void light_led(int color, int brightness) {
   /* color shortcuts
     OFF    0
@@ -122,12 +127,14 @@ void light_led(int color, int brightness) {
   pixelShield.show();
 }
 
+/* Flash red, rapidly */
 void stopp() {
   light_led(RED, 30);
   delay(50);
   off();
 }
 
+/* Turn the pixelshield off */
 void off() {
   light_led(OFF, 0);
 }
