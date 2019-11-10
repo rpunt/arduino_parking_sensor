@@ -6,6 +6,8 @@
 #include <avr/power.h>
 #endif
 
+//#define DEBUG
+
 //-----------
 // Pin setups
 //-----------
@@ -54,9 +56,9 @@ int distance = 0;
 int pixleCount = pixelShield.numPixels();
 
 void setup() {
-  #ifdef DEBUG
+#ifdef DEBUG
   Serial.begin(9600);
-  #endif
+#endif
 
   pixelShield.begin();
   pixelShield.show(); // Initialize all pixels to 'off'
@@ -67,18 +69,18 @@ void loop() {
 
   distance = (sonar.ping_in());
 
-  #ifdef DEBUG
+#ifdef DEBUG
   Serial.println(distance);
-  #endif
+#endif
 
   if (distance >= GREEN_MIN) {
-    light_led(GREEN,30);
+    light_led(GREEN, 5);
   }
   else if (distance <= YELLOW_MAX && distance >= YELLOW_MIN) {
-    light_led(YELLOW,50);
+    light_led(YELLOW, 10);
   }
   else if (distance <= RED_MAX && distance >= RED_MIN) {
-    light_led(RED,50);
+    light_led(RED, 10);
   }
   else if (distance < RED_MIN) {
     stopp();
@@ -114,18 +116,18 @@ void light_led(int color, int brightness) {
     default:
       break;
   }
-  for(int i = 0; i < pixleCount; i++) {
-    pixelShield.setPixelColor(i, pixelShield.Color(red,green,blue));
+  for (int i = 0; i < pixleCount; i++) {
+    pixelShield.setPixelColor(i, pixelShield.Color(red, green, blue));
   }
   pixelShield.show();
 }
 
 void stopp() {
-  light_led(RED,127);
+  light_led(RED, 30);
   delay(50);
   off();
 }
 
 void off() {
-  light_led(OFF,0);
+  light_led(OFF, 0);
 }
