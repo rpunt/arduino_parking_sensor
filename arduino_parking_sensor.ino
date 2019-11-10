@@ -6,29 +6,29 @@
 #include <avr/power.h>
 #endif
 
-//--------
-// DEFINES
-//--------
+//-----------
+// Pin setups
+//-----------
 // ultrasonic sensor setup
 #define TRIGGER_PIN  11
 #define ECHO_PIN     12
 
-// distance measurement limits
-#define MAX_DISTANCE 200
-#define GREEN_MIN    46
-#define YELLOW_MAX   45
-#define YELLOW_MIN   40
-#define RED_MAX      39
-#define RED_MIN      36
-
-// set color shortcuts for LED lighting
-#define OFF    0
-#define GREEN  1
-#define YELLOW 2
-#define RED    3
-
 // initialize the LED shield
 #define LED_DRIVER_PIN 13
+
+// distance measurement limits
+const int MAX_DISTANCE = 200;
+const int GREEN_MIN    = 46;
+const int YELLOW_MAX   = 45;
+const int YELLOW_MIN   = 40;
+const int RED_MAX      = 39;
+const int RED_MIN      = 36;
+
+// set color shortcuts for LED lighting
+const int OFF    = 0;
+const int GREEN  = 1;
+const int YELLOW = 2;
+const int RED    = 3;
 
 /* setup params for the pixelshield
   Parameter 1 = number of pixels in strip
@@ -54,8 +54,10 @@ int distance = 0;
 int pixleCount = pixelShield.numPixels();
 
 void setup() {
+  #ifdef DEBUG
   Serial.begin(9600);
-  
+  #endif
+
   pixelShield.begin();
   pixelShield.show(); // Initialize all pixels to 'off'
 }
@@ -64,8 +66,10 @@ void loop() {
   delay(50);
 
   distance = (sonar.ping_in());
-  
+
+  #ifdef DEBUG
   Serial.println(distance);
+  #endif
 
   if (distance >= GREEN_MIN) {
     light_led(GREEN,30);
@@ -95,21 +99,21 @@ void light_led(int color, int brightness) {
     RED    3
   */
   int red = 0; int green = 0; int blue = 0;
-  
-  switch (color) { 
+
+  switch (color) {
     case 1: // green
-      green = brightness; 
-      break; 
+      green = brightness;
+      break;
     case 2: // yellow
       red = brightness;
       green = brightness;
-      break; 
+      break;
     case 3: // red
       red = brightness;
-      break; 
-    default: 
-      break;   
-  } 
+      break;
+    default:
+      break;
+  }
   for(int i = 0; i < pixleCount; i++) {
     pixelShield.setPixelColor(i, pixelShield.Color(red,green,blue));
   }
