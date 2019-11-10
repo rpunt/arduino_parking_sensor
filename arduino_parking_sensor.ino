@@ -18,13 +18,14 @@
 // initialize the LED shield
 #define LED_DRIVER_PIN 13
 
-// distance measurement limits
-const int MAX_DISTANCE = 200;
-const int GREEN_MIN    = 46;
-const int YELLOW_MAX   = 45;
-const int YELLOW_MIN   = 40;
-const int RED_MAX      = 39;
-const int RED_MIN      = 36;
+// distance measurement limits in CM
+const int MAX_DISTANCE = 508;
+const int GREEN_MAX    = 200;
+const int GREEN_MIN    = 116;
+const int YELLOW_MAX   = 115;
+const int YELLOW_MIN   = 101;
+const int RED_MAX      = 100;
+const int RED_MIN      = 90;
 
 // set color shortcuts for LED lighting
 const int OFF    = 0;
@@ -51,6 +52,9 @@ Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel(40, LED_DRIVER_PIN, NEO_GRB + 
 //--------------
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
+// time-of-flight measurement from the rangefinder
+int duration = 0;
+// distance in CM as calculated from the rangefinder
 int distance = 0;
 
 int pixleCount = pixelShield.numPixels();
