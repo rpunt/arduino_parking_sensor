@@ -6,7 +6,7 @@
 #include <avr/power.h>
 #endif
 
-// #define DEBUG
+ #define DEBUG
 
 //-----------
 // Pin setups
@@ -19,11 +19,11 @@
 #define LED_DRIVER_PIN 13
 
 // distance measurement limits in CM
-const int MAX     = 200;
-const int GREEN   = 115;
-const int YELLOW  = 100;
-const int RED     = 90;
-const int MIN     = 10;  // you'll never be this close; ignore distances of 0 when there's nothing inside of the rangefinder's effective range to measure against
+const int MAX_DISTANCE    = 200;
+const int GREEN_DISTANCE  = 115;
+const int YELLOW_DISTANCE = 100;
+const int RED_DISTANCE    = 90;
+const int MIN_DISTANCE    = 10;  // you'll never be this close; ignore distances of 0 when there's nothing inside of the rangefinder's effective range to measure against
 
 // set color shortcuts for LED lighting
 const int OFF    = 0;
@@ -48,7 +48,7 @@ const int MAX_DUPLICATES = 60;
 */
 Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel(40, LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
 
-NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX);
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
 // time-of-flight measurement from the rangefinder
 int duration = 0;
@@ -75,7 +75,7 @@ void setup() {
 }
 
 void loop() {
-  delay(250);
+  delay(100);
 
   duration = sonar.ping_median(iterations);
   // convert duration measurement to CM
@@ -94,19 +94,19 @@ void loop() {
   if (duplicate_accumulator > MAX_DUPLICATES) {
     off();
   }
-  else if (distance > MAX || distance < MIN) {
+  else if (distance > MAX_DISTANCE || distance < MIN_DISTANCE) {
     off();
   }
-  else if (distance >= GREEN) {
+  else if (distance >= GREEN_DISTANCE) {
     light_led(GREEN, 5);
   }
-  else if (distance >= YELLOW) {
+  else if (distance >= YELLOW_DISTANCE) {
     light_led(YELLOW, 10);
   }
-  else if (distance >= RED) {
+  else if (distance >= RED_DISTANCE) {
     light_led(RED, 15);
   }
-  else if (distance >= MIN) {
+  else if (distance >= MIN_DISTANCE) {
     stopp();
   }
   else {
@@ -149,7 +149,7 @@ void light_led(int color, int brightness) {
 /* Flash red, rapidly */
 void stopp() {
   light_led(RED, 30);
-  delay(250);
+  delay(100);
   off();
 }
 
