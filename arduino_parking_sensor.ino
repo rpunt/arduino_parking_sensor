@@ -65,6 +65,8 @@ void setup() {
 
   pixelShield.begin();
   pixelShield.show(); // Initialize all pixels to 'off'
+
+  delay(100); // let the arduino settle before issuing first ping
 }
 
 void loop() {
