@@ -19,19 +19,20 @@
 #define LED_DRIVER_PIN 13
 
 // distance measurement limits in CM
-const int MAX_DISTANCE = 508;
-const int GREEN_MAX    = 200;
-const int GREEN_MIN    = 116;
-const int YELLOW_MAX   = 115;
-const int YELLOW_MIN   = 101;
-const int RED_MAX      = 100;
-const int RED_MIN      = 90;
+const int MAX     = 200;
+const int GREEN   = 115;
+const int YELLOW  = 100;
+const int RED     = 90;
+const int MIN     = 10;  // you'll never be this close; ignore distances of 0 when there's nothing inside of the rangefinder's effective range to measure against
 
 // set color shortcuts for LED lighting
 const int OFF    = 0;
 const int GREEN  = 1;
 const int YELLOW = 2;
 const int RED    = 3;
+
+// the max number of duplicate measurements we'll accept before turning the NeoPixel off
+const int MAX_DUPLICATES = 60;
 
 /* setup params for the pixelshield
   Parameter 1 = number of pixels in strip
@@ -47,7 +48,7 @@ const int RED    = 3;
 */
 Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel(40, LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
 
-NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX);
 
 // time-of-flight measurement from the rangefinder
 int duration = 0;
@@ -55,7 +56,11 @@ int duration = 0;
 int distance = 0;
 // number of pings to measure for the input smoother
 int iterations = 5;
-
+// an accumulator to turn the NeoPixel off after X identical readings
+int duplicate_accumulator = 0;
+// capture the previous measurement for the accumulator
+int last_reading = 0;
+// the number of pixels available in the NeoPixel
 int pixleCount = pixelShield.numPixels();
 
 void setup() {
@@ -70,7 +75,7 @@ void setup() {
 }
 
 void loop() {
-  delay(100);
+  delay(250);
 
   duration = sonar.ping_median(iterations);
   // convert duration measurement to CM
@@ -80,24 +85,34 @@ void loop() {
   Serial.println(distance);
 #endif
 
-  if (distance > GREEN_MAX) {
+  if (last_reading == distance) {
+    duplicate_accumulator++;
+  } else {
+    duplicate_accumulator = 0;
+  }
+
+  if (duplicate_accumulator > MAX_DUPLICATES) {
     off();
   }
-  else if (distance >= GREEN_MIN) {
+  else if (distance > MAX || distance < MIN) {
+    off();
+  }
+  else if (distance >= GREEN) {
     light_led(GREEN, 5);
   }
-  else if (distance < GREEN_MIN && distance >= YELLOW_MIN) {
+  else if (distance >= YELLOW) {
     light_led(YELLOW, 10);
   }
-  else if (distance < YELLOW_MIN && distance >= RED_MIN) {
-    light_led(RED, 10);
+  else if (distance >= RED) {
+    light_led(RED, 15);
   }
-  else if (distance < RED_MIN) {
+  else if (distance >= MIN) {
     stopp();
   }
   else {
     off();
   }
+  last_reading = distance;
 }
 
 /* Set the color for the pixelshield
@@ -134,7 +149,7 @@ void light_led(int color, int brightness) {
 /* Flash red, rapidly */
 void stopp() {
   light_led(RED, 30);
-  delay(100);
+  delay(250);
   off();
 }
 
