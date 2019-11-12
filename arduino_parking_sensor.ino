@@ -165,7 +165,7 @@ void light_led(int color, int brightness) {
 /* Flash red, rapidly */
 void stopp() {
   light_led(RED, 30);
-  delay(100);
+  delay(PING_DELAY);
   off();
 }
 
