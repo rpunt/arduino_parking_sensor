@@ -91,13 +91,10 @@ void setup() {
 void loop() {
   delay(PING_DELAY);
 
-  duration = sonar.ping_median(iterations);
-  // convert duration measurement to CM
-  distance = sonar.convert_cm(duration);
+  duration = sonar.ping_median(iterations); // get time-of-flight measurements from the sensor
+  distance = sonar.convert_cm(duration);    // convert duration measurement to CM
 
-  DEBUG_PRINT(distance);
-  DEBUG_PRINT(" cm");
-  DEBUG_PRINTLN();
+  DEBUG_PRINT(distance); DEBUG_PRINT(" cm"); DEBUG_PRINTLN();
 
   if (last_reading == distance) {
     duplicate_accumulator++;
@@ -107,10 +104,10 @@ void loop() {
 
   if (duplicate_accumulator > MAX_DUPLICATES) {
     DEBUG_PRINT("HIT MAX DUPLICATES WITH "); DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINTLN();
-    off();
+    led_off();
   }
   else if (distance > MAX_DISTANCE || distance < MIN_DISTANCE) {
-    off();
+    led_off();
   }
   else if (distance >= GREEN_DISTANCE) {
     light_led(GREEN, 5);
@@ -125,7 +122,7 @@ void loop() {
     stopp();
   }
   else {
-    off();
+    led_off();
   }
   last_reading = distance;
   DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINT(" duplicates"); DEBUG_PRINTLN();
@@ -170,6 +167,6 @@ void stopp() {
 }
 
 /* Turn the pixelshield off */
-void off() {
+void led_off() {
   light_led(OFF, 0);
 }
