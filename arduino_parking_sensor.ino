@@ -46,7 +46,7 @@ const int YELLOW = 2;
 const int RED    = 3;
 
 // the max number of duplicate measurements we'll accept before turning the NeoPixel off
-const int MAX_DUPLICATES = 60;
+const int MAX_DUPLICATES = 120;
 
 /* setup params for the pixelshield
   Parameter 1 = number of pixels in strip
