@@ -6,7 +6,18 @@
 #include <avr/power.h>
 #endif
 
- #define DEBUG
+//#define DEBUG
+
+// debugger output
+#ifdef DEBUG
+  #define DEBUG_PRINT(x)   Serial.print (x)
+  #define DEBUG_PRINTDEC(x)Serial.print (x, DEC)
+  #define DEBUG_PRINTLN(x) Serial.println (x)
+#else
+  #define DEBUG_PRINT(x)
+  #define DEBUG_PRINTDEC(x)
+  #define DEBUG_PRINTLN(x)
+#endif
 
 //-----------
 // Pin setups
@@ -81,9 +92,9 @@ void loop() {
   // convert duration measurement to CM
   distance = sonar.convert_cm(duration);
 
-#ifdef DEBUG
-  Serial.println(distance);
-#endif
+  DEBUG_PRINT(distance);
+  DEBUG_PRINT(" cm");
+  DEBUG_PRINTLN();
 
   if (last_reading == distance) {
     duplicate_accumulator++;
@@ -92,6 +103,7 @@ void loop() {
   }
 
   if (duplicate_accumulator > MAX_DUPLICATES) {
+    DEBUG_PRINT("HIT MAX DUPLICATES WITH "); DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINTLN();
     off();
   }
   else if (distance > MAX_DISTANCE || distance < MIN_DISTANCE) {
@@ -113,6 +125,7 @@ void loop() {
     off();
   }
   last_reading = distance;
+  DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINT(" duplicates"); DEBUG_PRINTLN();
 }
 
 /* Set the color for the pixelshield
