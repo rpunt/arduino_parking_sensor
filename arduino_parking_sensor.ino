@@ -29,6 +29,9 @@
 // initialize the LED shield
 #define LED_DRIVER_PIN 13
 
+// delay between pings
+const int PING_DELAY = 100;
+
 // distance measurement limits in CM
 const int MAX_DISTANCE    = 200;
 const int GREEN_DISTANCE  = 115;
@@ -86,7 +89,7 @@ void setup() {
 }
 
 void loop() {
-  delay(100);
+  delay(PING_DELAY);
 
   duration = sonar.ping_median(iterations);
   // convert duration measurement to CM
