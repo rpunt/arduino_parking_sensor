@@ -163,7 +163,7 @@ void light_led(int color, int brightness) {
 void stopp() {
   light_led(RED, 30);
   delay(PING_DELAY);
-  off();
+  led_off();
 }
 
 /* Turn the pixelshield off */
