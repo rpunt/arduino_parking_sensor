@@ -168,11 +168,11 @@ void light_led(int color, int columnHeight, int brightness) {
       pixel = i * 8 + j;
       if (j < columnHeight) {
         pixelShield.setPixelColor(pixel, pixelShield.Color(red, green, blue));
+      } else {
+        pixelShield.setPixelColor(pixel, pixelShield.Color(0, 0, 0));
       }
+      
     }
-  }
-  for (int i = 0; i < pixleCount; i++) {
-    pixelShield.setPixelColor(i, pixelShield.Color(red, green, blue));
   }
   pixelShield.show();
 }
