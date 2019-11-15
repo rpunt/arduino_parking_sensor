@@ -1,7 +1,7 @@
-
 #include <NewPing.h>
 
 #include <Adafruit_NeoPixel.h>
+
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
@@ -34,10 +34,15 @@ const int PING_DELAY = 100;
 
 // distance measurement limits in CM
 const int MAX_DISTANCE    = 200;
-const int GREEN_DISTANCE  = 115;
-const int YELLOW_DISTANCE = 100;
+const int GREEN_DISTANCE  = 120;
+const int YELLOW_DISTANCE = 105;
 const int RED_DISTANCE    = 90;
 const int MIN_DISTANCE    = 10;  // you'll never be this close; ignore distances of 0 when there's nothing inside of the rangefinder's effective range to measure against
+
+// define the ranges of each color distance for percentage calculation
+const int GREEN_RANGE = MAX_DISTANCE - GREEN_DISTANCE;
+const int YELLOW_RANGE = GREEN_DISTANCE - YELLOW_DISTANCE;
+const int RED_RANGE = YELLOW_DISTANCE - RED_DISTANCE;
 
 // set color shortcuts for LED lighting
 const int OFF    = 0;
@@ -76,6 +81,8 @@ int duplicate_accumulator = 0;
 int last_reading = 0;
 // the number of pixels available in the NeoPixel
 int pixleCount = pixelShield.numPixels();
+// the number of pixels per row to fill when presented as a bar graph
+int columnHeight = 0;
 
 void setup() {
 #ifdef DEBUG
@@ -105,18 +112,24 @@ void loop() {
   if (duplicate_accumulator > MAX_DUPLICATES) {
     DEBUG_PRINT("HIT MAX DUPLICATES WITH "); DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINTLN();
     led_off();
-  }
+  } 
   else if (distance > MAX_DISTANCE || distance < MIN_DISTANCE) {
     led_off();
-  }
+  } 
   else if (distance >= GREEN_DISTANCE) {
-    light_led(GREEN, 5);
-  }
+    columnHeight = columnFill(distance, GREEN_RANGE, GREEN_DISTANCE);
+    DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight"); DEBUG_PRINTLN();
+    light_led(GREEN, columnHeight, 5);
+  } 
   else if (distance >= YELLOW_DISTANCE) {
-    light_led(YELLOW, 10);
+    columnHeight = columnFill(distance, YELLOW_RANGE, YELLOW_DISTANCE);
+    DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight"); DEBUG_PRINTLN();
+    light_led(YELLOW, columnHeight, 10);
   }
   else if (distance >= RED_DISTANCE) {
-    light_led(RED, 15);
+    columnHeight = columnFill(distance, RED_RANGE, RED_DISTANCE);
+    DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight"); DEBUG_PRINTLN();
+    light_led(RED, columnHeight, 15);
   }
   else if (distance >= MIN_DISTANCE) {
     stopp();
@@ -125,7 +138,7 @@ void loop() {
     led_off();
   }
   last_reading = distance;
-  DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINT(" duplicates"); DEBUG_PRINTLN();
+  DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINT(" duplicates"); DEBUG_PRINTLN(); DEBUG_PRINTLN();
 }
 
 /* Set the color for the pixelshield
@@ -136,7 +149,7 @@ void loop() {
     RED   : 3
   Brightness: 1-255
 */
-void light_led(int color, int brightness) {
+void light_led(int color, int columnHeight, int brightness) {
   int red = 0; int green = 0; int blue = 0;
 
   switch (color) {
@@ -153,20 +166,56 @@ void light_led(int color, int brightness) {
     default:
       break;
   }
-  for (int i = 0; i < pixleCount; i++) {
-    pixelShield.setPixelColor(i, pixelShield.Color(red, green, blue));
+  for (int i = 0; i < 5; i++) {
+    for (int j = 0; j < 8; j++) {
+      int pixel = i * 8 + j;
+      if (j < columnHeight) {
+        pixelShield.setPixelColor(pixel, pixelShield.Color(red, green, blue));
+      } else {
+        pixelShield.setPixelColor(pixel, pixelShield.Color(0, 0, 0));
+      }
+      
+    }
   }
   pixelShield.show();
 }
 
 /* Flash red, rapidly */
 void stopp() {
-  light_led(RED, 30);
+  light_led(RED, 8, 30);
   delay(PING_DELAY);
   led_off();
 }
 
 /* Turn the pixelshield off */
 void led_off() {
-  light_led(OFF, 0);
+  light_led(OFF, 0, 0);
+}
+
+/*
+  calculate the number of pixels to fill per column
+  Distance from rangefinder, Size of range for color, Minimum distance for color
+*/
+int columnFill(int distance, int range, int colorDistance) {
+  // figure out how far into the color's range we have traveled
+  int rangeConsumed = distance - (colorDistance + range);
+  // at 8 pixels per column, each pixel is 12.5% of the column
+  float usableRangeConsumed = abs(rangeConsumed);
+  float columnHeight = ((usableRangeConsumed/range)*100)/12.5;
+
+  DEBUG_PRINT(range); DEBUG_PRINT(" color range"); DEBUG_PRINTLN();
+  DEBUG_PRINT(colorDistance); DEBUG_PRINT(" min colorDistance"); DEBUG_PRINTLN();
+  DEBUG_PRINT(rangeConsumed); DEBUG_PRINT(" range consumed"); DEBUG_PRINTLN();
+  DEBUG_PRINT(usableRangeConsumed); DEBUG_PRINT(" abs rangeConsumed"); DEBUG_PRINTLN();
+  DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight from columnFill"); DEBUG_PRINTLN();
+
+  if (columnHeight < 1) {
+    return 1;
+  } 
+  else if (columnHeight > 8) {
+    return 8;
+  } 
+  else {
+    return columnHeight;
+  }
 }
