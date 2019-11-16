@@ -29,7 +29,7 @@
 // LCD setup
 const int LCD_COLUMNS = 8;
 const int LCD_ROWS = 5;
-hkljkp
+
 // delay between pings
 const int PING_DELAY = 100;
 
