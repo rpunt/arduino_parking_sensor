@@ -19,9 +19,6 @@
   #define DEBUG_PRINTLN(x)
 #endif
 
-//-----------
-// Pin setups
-//-----------
 // ultrasonic sensor setup
 #define TRIGGER_PIN  11
 #define ECHO_PIN     12
@@ -29,20 +26,27 @@
 // initialize the LED shield
 #define LED_DRIVER_PIN 13
 
+// LCD setup
+const int LCD_COLUMNS = 8;
+const int LCD_ROWS = 5;
+hkljkp
 // delay between pings
 const int PING_DELAY = 100;
 
 // distance measurement limits in CM
 const int MAX_DISTANCE    = 200;
-const int GREEN_DISTANCE  = 120;
-const int YELLOW_DISTANCE = 105;
-const int RED_DISTANCE    = 90;
+const int STOP_DISTANCE   = 90;
 const int MIN_DISTANCE    = 10;  // you'll never be this close; ignore distances of 0 when there's nothing inside of the rangefinder's effective range to measure against
+
+const int COLOR_RANGE  = (MAX_DISTANCE - STOP_DISTANCE) / 3;
+const int GREEN_DISTANCE = MAX_DISTANCE - COLOR_RANGE;
+const int YELLOW_DISTANCE = MAX_DISTANCE - (COLOR_RANGE * 2);
+
 
 // define the ranges of each color distance for percentage calculation
 const int GREEN_RANGE = MAX_DISTANCE - GREEN_DISTANCE;
 const int YELLOW_RANGE = GREEN_DISTANCE - YELLOW_DISTANCE;
-const int RED_RANGE = YELLOW_DISTANCE - RED_DISTANCE;
+const int RED_RANGE = YELLOW_DISTANCE - STOP_DISTANCE;
 
 // set color shortcuts for LED lighting
 const int OFF    = 0;
@@ -112,22 +116,22 @@ void loop() {
   if (duplicate_accumulator > MAX_DUPLICATES) {
     DEBUG_PRINT("HIT MAX DUPLICATES WITH "); DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINTLN();
     led_off();
-  } 
+  }
   else if (distance > MAX_DISTANCE || distance < MIN_DISTANCE) {
     led_off();
-  } 
+  }
   else if (distance >= GREEN_DISTANCE) {
     columnHeight = columnFill(distance, GREEN_RANGE, GREEN_DISTANCE);
     DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight"); DEBUG_PRINTLN();
     light_led(GREEN, columnHeight, 5);
-  } 
+  }
   else if (distance >= YELLOW_DISTANCE) {
     columnHeight = columnFill(distance, YELLOW_RANGE, YELLOW_DISTANCE);
     DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight"); DEBUG_PRINTLN();
     light_led(YELLOW, columnHeight, 10);
   }
-  else if (distance >= RED_DISTANCE) {
-    columnHeight = columnFill(distance, RED_RANGE, RED_DISTANCE);
+  else if (distance >= STOP_DISTANCE) {
+    columnHeight = columnFill(distance, RED_RANGE, STOP_DISTANCE);
     DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight"); DEBUG_PRINTLN();
     light_led(RED, columnHeight, 15);
   }
@@ -174,7 +178,7 @@ void light_led(int color, int columnHeight, int brightness) {
       } else {
         pixelShield.setPixelColor(pixel, pixelShield.Color(0, 0, 0));
       }
-      
+
     }
   }
   pixelShield.show();
@@ -211,10 +215,10 @@ int columnFill(int distance, int range, int colorDistance) {
 
   if (columnHeight < 1) {
     return 1;
-  } 
+  }
   else if (columnHeight > 8) {
     return 8;
-  } 
+  }
   else {
     return columnHeight;
   }
