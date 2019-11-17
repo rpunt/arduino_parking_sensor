@@ -6,37 +6,33 @@
 #include <avr/power.h>
 #endif
 
+// enable debug logging? uncomment this
 //#define DEBUG
 
-// debugger output
-#ifdef DEBUG
-  #define DEBUG_PRINT(x)   Serial.print (x)
-  #define DEBUG_PRINTDEC(x)Serial.print (x, DEC)
-  #define DEBUG_PRINTLN(x) Serial.println (x)
-#else
-  #define DEBUG_PRINT(x)
-  #define DEBUG_PRINTDEC(x)
-  #define DEBUG_PRINTLN(x)
-#endif
-
+/***********
+* pin setups
+***********/
 // ultrasonic sensor setup
-#define TRIGGER_PIN  11
-#define ECHO_PIN     12
-
+#define TRIGGER_PIN    11
+#define ECHO_PIN       12
 // initialize the LED shield
 #define LED_DRIVER_PIN 13
 
-// LCD setup
+// LED shield specs
 const int LCD_COLUMNS = 8;
-const int LCD_ROWS = 5;
+const int LCD_ROWS    = 5;
 
 // delay between pings
 const int PING_DELAY = 100;
 
 // distance measurement limits in CM
-const int MAX_DISTANCE    = 200;
-const int STOP_DISTANCE   = 90;
-const int SHUTOFF_DISTANCE    = 10;  // you'll never be this close; ignore distances of 0 when there's nothing inside of the rangefinder's effective range to measure against
+const int MAX_DISTANCE     = 200;
+const int STOP_DISTANCE    = 90;
+const int SHUTOFF_DISTANCE = 10;  // you'll never be this close; ignore distances of 0 when there's nothing inside of the rangefinder's effective range to measure against
+
+/****************************************************
+you're unlikely to have to modify anything below here
+****************************************************/
 
 const int COLOR_RANGE  = (MAX_DISTANCE - STOP_DISTANCE) / 3;
 const int GREEN_DISTANCE = MAX_DISTANCE - COLOR_RANGE;
@@ -55,6 +51,17 @@ const int RED    = 3;
 
 // the max number of duplicate measurements we'll accept before turning the NeoPixel off
 const int MAX_DUPLICATES = 120;
+
+// easy debug output
+#ifdef DEBUG
+  #define DEBUG_PRINT(x)   Serial.print (x)
+  #define DEBUG_PRINTDEC(x)Serial.print (x, DEC)
+  #define DEBUG_PRINTLN(x) Serial.println (x)
+#else
+  #define DEBUG_PRINT(x)
+  #define DEBUG_PRINTDEC(x)
+  #define DEBUG_PRINTLN(x)
+#endif
 
 /* setup params for the pixelshield
   Parameter 1 = number of pixels in strip
