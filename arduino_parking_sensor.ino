@@ -169,9 +169,10 @@ void light_led(int color, int columnHeight, int brightness) {
     default:
       break;
   }
-  for (int i = 0; i < 5; i++) {
-    for (int j = 0; j < 8; j++) {
-      int pixel = i * 8 + j;
+
+  for (int i = 0; i < LCD_ROWS; i++) {
+    for (int j = 0; j < LCD_COLUMNS; j++) {
+      int pixel = (i * LCD_COLUMNS) + j;
       if (j < columnHeight) {
         pixelShield.setPixelColor(pixel, pixelShield.Color(red, green, blue));
       } else {
@@ -197,28 +198,28 @@ void led_off() {
 
 /*
   calculate the number of pixels to fill per column
-  Distance from rangefinder, Size of range for color, Minimum distance for color
+  Object distance from rangefinder, Size of range for color, Minimum distance for color
 */
-int columnFill(int distance, int range, int colorDistance) {
+int columnFill(int objectDistance, int range, int colorDistance) {
   // figure out how far into the color's range we have traveled
-  int rangeConsumed = distance - (colorDistance + range);
-  // at 8 pixels per column, each pixel is 12.5% of the column
+  int rangeConsumed = objectDistance - (colorDistance + range);
   float usableRangeConsumed = abs(rangeConsumed);
-  float columnHeight = ((usableRangeConsumed/range)*100)/12.5;
+  //                         percentage of range consumed     percent to fill per pixel
+  float columnFillHeight = ((usableRangeConsumed/range)*100)/(100/LCD_COLUMNS);
 
   DEBUG_PRINT(range); DEBUG_PRINT(" color range"); DEBUG_PRINTLN();
   DEBUG_PRINT(colorDistance); DEBUG_PRINT(" min colorDistance"); DEBUG_PRINTLN();
   DEBUG_PRINT(rangeConsumed); DEBUG_PRINT(" range consumed"); DEBUG_PRINTLN();
   DEBUG_PRINT(usableRangeConsumed); DEBUG_PRINT(" abs rangeConsumed"); DEBUG_PRINTLN();
-  DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight from columnFill"); DEBUG_PRINTLN();
+  DEBUG_PRINT(columnFillHeight); DEBUG_PRINT(" columnFillHeight from columnFill"); DEBUG_PRINTLN();
 
-  if (columnHeight < 1) {
+  if (columnFillHeight < 1) {
     return 1;
   }
-  else if (columnHeight > 8) {
-    return 8;
+  else if (columnFillHeight > LCD_COLUMNS) {
+    return LCD_COLUMNS;
   }
   else {
-    return columnHeight;
+    return columnFillHeight;
   }
 }
