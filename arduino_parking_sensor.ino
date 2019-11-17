@@ -36,12 +36,11 @@ const int PING_DELAY = 100;
 // distance measurement limits in CM
 const int MAX_DISTANCE    = 200;
 const int STOP_DISTANCE   = 90;
-const int MIN_DISTANCE    = 10;  // you'll never be this close; ignore distances of 0 when there's nothing inside of the rangefinder's effective range to measure against
+const int SHUTOFF_DISTANCE    = 10;  // you'll never be this close; ignore distances of 0 when there's nothing inside of the rangefinder's effective range to measure against
 
 const int COLOR_RANGE  = (MAX_DISTANCE - STOP_DISTANCE) / 3;
 const int GREEN_DISTANCE = MAX_DISTANCE - COLOR_RANGE;
 const int YELLOW_DISTANCE = MAX_DISTANCE - (COLOR_RANGE * 2);
-
 
 // define the ranges of each color distance for percentage calculation
 const int GREEN_RANGE = MAX_DISTANCE - GREEN_DISTANCE;
@@ -117,7 +116,7 @@ void loop() {
     DEBUG_PRINT("HIT MAX DUPLICATES WITH "); DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINTLN();
     led_off();
   }
-  else if (distance > MAX_DISTANCE || distance < MIN_DISTANCE) {
+  else if (distance > MAX_DISTANCE || distance < SHUTOFF_DISTANCE) {
     led_off();
   }
   else if (distance >= GREEN_DISTANCE) {
@@ -135,7 +134,7 @@ void loop() {
     DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight"); DEBUG_PRINTLN();
     light_led(RED, columnHeight, 15);
   }
-  else if (distance >= MIN_DISTANCE) {
+  else if (distance >= SHUTOFF_DISTANCE) {
     stopp();
   }
   else {
