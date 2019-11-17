@@ -208,8 +208,14 @@ void led_off() {
   Object distance from rangefinder, Size of range for color, Minimum distance for color
 */
 int columnFill(int objectDistance, int range, int colorDistance) {
+  // TODO: there's gotta be a use for map() in here...
   // figure out how far into the color's range we have traveled
   int rangeConsumed = objectDistance - (colorDistance + range);
+  /* 
+  apprarently the arduino abs() function cannot be used as part of any other calculation
+  the results will be incorrect
+  isolate it
+  */
   float usableRangeConsumed = abs(rangeConsumed);
   //                         percentage of range consumed     percent to fill per pixel
   float columnFillHeight = ((usableRangeConsumed/range)*100)/(100/LCD_COLUMNS);
