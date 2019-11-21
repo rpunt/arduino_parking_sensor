@@ -23,7 +23,7 @@ const int LCD_COLUMNS = 8;
 const int LCD_ROWS    = 5;
 
 // delay between pings
-const int PING_DELAY = 100;
+const int PING_DELAY = 200;
 
 // distance measurement limits in CM
 const int MAX_DISTANCE     = 200;
@@ -84,7 +84,7 @@ int duration = 0;
 // distance in CM as calculated from the rangefinder
 int distance = 0;
 // number of pings to measure for the input smoother
-int iterations = 5;
+int iterations = 7;
 // an accumulator to turn the NeoPixel off after X identical readings
 int duplicate_accumulator = 0;
 // capture the previous measurement for the accumulator
