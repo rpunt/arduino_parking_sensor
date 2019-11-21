@@ -102,6 +102,10 @@ void setup() {
   pixelShield.begin();
   pixelShield.show(); // Initialize all pixels to 'off'
 
+  DEBUG_PRINT("green min: "); DEBUG_PRINT(GREEN_DISTANCE);
+  DEBUG_PRINT("; yellow min: "); DEBUG_PRINT(YELLOW_DISTANCE);
+  DEBUG_PRINT("; red min: "); DEBUG_PRINT(STOP_DISTANCE); DEBUG_PRINTLN(); DEBUG_PRINTLN();
+
   delay(100); // let the arduino settle before issuing first ping
 }
 
@@ -111,7 +115,7 @@ void loop() {
   duration = sonar.ping_median(iterations); // get time-of-flight measurements from the sensor
   distance = sonar.convert_cm(duration);    // convert duration measurement to CM
 
-  DEBUG_PRINT(distance); DEBUG_PRINT(" cm"); DEBUG_PRINTLN();
+  DEBUG_PRINT("distance: "); DEBUG_PRINT(distance); DEBUG_PRINT(" cm; ");
 
   if (last_reading == distance) {
     duplicate_accumulator++;
@@ -120,7 +124,7 @@ void loop() {
   }
 
   if (duplicate_accumulator > MAX_DUPLICATES) {
-    DEBUG_PRINT("HIT MAX DUPLICATES WITH "); DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINTLN();
+    DEBUG_PRINT("HIT MAX DUPLICATES WITH COUNT "); DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINTLN();
     led_off();
   }
   else if (distance > MAX_DISTANCE || distance < SHUTOFF_DISTANCE) {
@@ -128,17 +132,17 @@ void loop() {
   }
   else if (distance >= GREEN_DISTANCE) {
     columnHeight = columnFill(distance, GREEN_RANGE, GREEN_DISTANCE);
-    DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight"); DEBUG_PRINTLN();
+    DEBUG_PRINT("columnHeight: "); DEBUG_PRINT(columnHeight); DEBUG_PRINTLN();
     light_led(GREEN, columnHeight, 5);
   }
   else if (distance >= YELLOW_DISTANCE) {
     columnHeight = columnFill(distance, YELLOW_RANGE, YELLOW_DISTANCE);
-    DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight"); DEBUG_PRINTLN();
+    DEBUG_PRINT("columnHeight: "); DEBUG_PRINT(columnHeight); DEBUG_PRINTLN();
     light_led(YELLOW, columnHeight, 10);
   }
   else if (distance >= STOP_DISTANCE) {
     columnHeight = columnFill(distance, RED_RANGE, STOP_DISTANCE);
-    DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight"); DEBUG_PRINTLN();
+    DEBUG_PRINT("columnHeight: "); DEBUG_PRINT(columnHeight); DEBUG_PRINTLN();
     light_led(RED, columnHeight, 15);
   }
   else if (distance >= SHUTOFF_DISTANCE) {
@@ -220,11 +224,11 @@ int columnFill(int objectDistance, int range, int colorDistance) {
   //                         percentage of range consumed     percent to fill per pixel
   float columnFillHeight = ((usableRangeConsumed/range)*100)/(100/LCD_COLUMNS);
 
-  DEBUG_PRINT(range); DEBUG_PRINT(" color range"); DEBUG_PRINTLN();
-  DEBUG_PRINT(colorDistance); DEBUG_PRINT(" min colorDistance"); DEBUG_PRINTLN();
-  DEBUG_PRINT(rangeConsumed); DEBUG_PRINT(" range consumed"); DEBUG_PRINTLN();
-  DEBUG_PRINT(usableRangeConsumed); DEBUG_PRINT(" abs rangeConsumed"); DEBUG_PRINTLN();
-  DEBUG_PRINT(columnFillHeight); DEBUG_PRINT(" columnFillHeight from columnFill"); DEBUG_PRINTLN();
+  DEBUG_PRINT("min colorDistance: "); DEBUG_PRINT(colorDistance); DEBUG_PRINTLN();
+  DEBUG_PRINT("color range: "); DEBUG_PRINT(range);  DEBUG_PRINT("; ");
+  DEBUG_PRINT(rangeConsumed); DEBUG_PRINT(" (");
+  DEBUG_PRINT(usableRangeConsumed); DEBUG_PRINT(") range consumed"); DEBUG_PRINTLN();
+  DEBUG_PRINT("columnFillHeight from columnFill: "); DEBUG_PRINT(columnFillHeight); DEBUG_PRINT("; ");
 
   if (columnFillHeight < 1) {
     return 1;
