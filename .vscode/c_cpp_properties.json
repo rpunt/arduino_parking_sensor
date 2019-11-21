@@ -5,7 +5,9 @@
             "includePath": [
                 "C:\\Program Files (x86)\\Arduino\\tools\\**",
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\**",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/**",
+                "/Applications/Arduino.app/Contents/Java/tools/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -14,21 +16,23 @@
             ],
             "intelliSenseMode": "msvc-x64",
             "forcedInclude": [
-                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
+                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h",
+                "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/Arduino.h"
             ]
         },
         {
             "name": "Arduino",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:\\Users\\ryan\\Documents\\Arduino\\libraries\\**"
+                "${workspaceFolder}/../libraries/**"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
-            "intelliSenseMode": "msvc-x64"
+            "intelliSenseMode": "msvc-x64",
+            "compilerPath": "/usr/bin/clang"
         }
     ],
     "version": 4

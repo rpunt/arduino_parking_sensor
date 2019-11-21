@@ -6,43 +6,42 @@
 #include <avr/power.h>
 #endif
 
+// enable debug logging? uncomment this
 //#define DEBUG
 
-// debugger output
-#ifdef DEBUG
-  #define DEBUG_PRINT(x)   Serial.print (x)
-  #define DEBUG_PRINTDEC(x)Serial.print (x, DEC)
-  #define DEBUG_PRINTLN(x) Serial.println (x)
-#else
-  #define DEBUG_PRINT(x)
-  #define DEBUG_PRINTDEC(x)
-  #define DEBUG_PRINTLN(x)
-#endif
-
-//-----------
-// Pin setups
-//-----------
+/***********
+* pin setups
+***********/
 // ultrasonic sensor setup
-#define TRIGGER_PIN  11
-#define ECHO_PIN     12
-
+#define TRIGGER_PIN    11
+#define ECHO_PIN       12
 // initialize the LED shield
 #define LED_DRIVER_PIN 13
 
+// LED shield specs
+const int LCD_COLUMNS = 8;
+const int LCD_ROWS    = 5;
+
 // delay between pings
-const int PING_DELAY = 100;
+const int PING_DELAY = 200;
 
 // distance measurement limits in CM
-const int MAX_DISTANCE    = 200;
-const int GREEN_DISTANCE  = 120;
-const int YELLOW_DISTANCE = 105;
-const int RED_DISTANCE    = 90;
-const int MIN_DISTANCE    = 10;  // you'll never be this close; ignore distances of 0 when there's nothing inside of the rangefinder's effective range to measure against
+const int MAX_DISTANCE     = 200;
+const int STOP_DISTANCE    = 90;
+const int SHUTOFF_DISTANCE = 10;  // you'll never be this close; ignore distances of 0 when there's nothing inside of the rangefinder's effective range to measure against
+
+/****************************************************
+you're unlikely to have to modify anything below here
+****************************************************/
+
+const int COLOR_RANGE  = (MAX_DISTANCE - STOP_DISTANCE) / 3;
+const int GREEN_DISTANCE = MAX_DISTANCE - COLOR_RANGE;
+const int YELLOW_DISTANCE = MAX_DISTANCE - (COLOR_RANGE * 2);
 
 // define the ranges of each color distance for percentage calculation
 const int GREEN_RANGE = MAX_DISTANCE - GREEN_DISTANCE;
 const int YELLOW_RANGE = GREEN_DISTANCE - YELLOW_DISTANCE;
-const int RED_RANGE = YELLOW_DISTANCE - RED_DISTANCE;
+const int RED_RANGE = YELLOW_DISTANCE - STOP_DISTANCE;
 
 // set color shortcuts for LED lighting
 const int OFF    = 0;
@@ -52,6 +51,17 @@ const int RED    = 3;
 
 // the max number of duplicate measurements we'll accept before turning the NeoPixel off
 const int MAX_DUPLICATES = 120;
+
+// easy debug output
+#ifdef DEBUG
+  #define DEBUG_PRINT(x)   Serial.print (x)
+  #define DEBUG_PRINTDEC(x)Serial.print (x, DEC)
+  #define DEBUG_PRINTLN(x) Serial.println (x)
+#else
+  #define DEBUG_PRINT(x)
+  #define DEBUG_PRINTDEC(x)
+  #define DEBUG_PRINTLN(x)
+#endif
 
 /* setup params for the pixelshield
   Parameter 1 = number of pixels in strip
@@ -74,7 +84,7 @@ int duration = 0;
 // distance in CM as calculated from the rangefinder
 int distance = 0;
 // number of pings to measure for the input smoother
-int iterations = 5;
+int iterations = 7;
 // an accumulator to turn the NeoPixel off after X identical readings
 int duplicate_accumulator = 0;
 // capture the previous measurement for the accumulator
@@ -92,6 +102,10 @@ void setup() {
   pixelShield.begin();
   pixelShield.show(); // Initialize all pixels to 'off'
 
+  DEBUG_PRINT("green min: "); DEBUG_PRINT(GREEN_DISTANCE);
+  DEBUG_PRINT("; yellow min: "); DEBUG_PRINT(YELLOW_DISTANCE);
+  DEBUG_PRINT("; red min: "); DEBUG_PRINT(STOP_DISTANCE); DEBUG_PRINTLN(); DEBUG_PRINTLN();
+
   delay(100); // let the arduino settle before issuing first ping
 }
 
@@ -101,7 +115,7 @@ void loop() {
   duration = sonar.ping_median(iterations); // get time-of-flight measurements from the sensor
   distance = sonar.convert_cm(duration);    // convert duration measurement to CM
 
-  DEBUG_PRINT(distance); DEBUG_PRINT(" cm"); DEBUG_PRINTLN();
+  DEBUG_PRINT("distance: "); DEBUG_PRINT(distance); DEBUG_PRINT(" cm; ");
 
   if (last_reading == distance) {
     duplicate_accumulator++;
@@ -110,28 +124,28 @@ void loop() {
   }
 
   if (duplicate_accumulator > MAX_DUPLICATES) {
-    DEBUG_PRINT("HIT MAX DUPLICATES WITH "); DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINTLN();
+    DEBUG_PRINT("HIT MAX DUPLICATES WITH COUNT "); DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINTLN();
     led_off();
-  } 
-  else if (distance > MAX_DISTANCE || distance < MIN_DISTANCE) {
+  }
+  else if (distance > MAX_DISTANCE || distance < SHUTOFF_DISTANCE) {
     led_off();
-  } 
+  }
   else if (distance >= GREEN_DISTANCE) {
     columnHeight = columnFill(distance, GREEN_RANGE, GREEN_DISTANCE);
-    DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight"); DEBUG_PRINTLN();
+    DEBUG_PRINT("columnHeight: "); DEBUG_PRINT(columnHeight); DEBUG_PRINTLN();
     light_led(GREEN, columnHeight, 5);
-  } 
+  }
   else if (distance >= YELLOW_DISTANCE) {
     columnHeight = columnFill(distance, YELLOW_RANGE, YELLOW_DISTANCE);
-    DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight"); DEBUG_PRINTLN();
+    DEBUG_PRINT("columnHeight: "); DEBUG_PRINT(columnHeight); DEBUG_PRINTLN();
     light_led(YELLOW, columnHeight, 10);
   }
-  else if (distance >= RED_DISTANCE) {
-    columnHeight = columnFill(distance, RED_RANGE, RED_DISTANCE);
-    DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight"); DEBUG_PRINTLN();
+  else if (distance >= STOP_DISTANCE) {
+    columnHeight = columnFill(distance, RED_RANGE, STOP_DISTANCE);
+    DEBUG_PRINT("columnHeight: "); DEBUG_PRINT(columnHeight); DEBUG_PRINTLN();
     light_led(RED, columnHeight, 15);
   }
-  else if (distance >= MIN_DISTANCE) {
+  else if (distance >= SHUTOFF_DISTANCE) {
     stopp();
   }
   else {
@@ -166,15 +180,16 @@ void light_led(int color, int columnHeight, int brightness) {
     default:
       break;
   }
-  for (int i = 0; i < 5; i++) {
-    for (int j = 0; j < 8; j++) {
-      int pixel = i * 8 + j;
+
+  for (int i = 0; i < LCD_ROWS; i++) {
+    for (int j = 0; j < LCD_COLUMNS; j++) {
+      int pixel = (i * LCD_COLUMNS) + j;
       if (j < columnHeight) {
         pixelShield.setPixelColor(pixel, pixelShield.Color(red, green, blue));
       } else {
         pixelShield.setPixelColor(pixel, pixelShield.Color(0, 0, 0));
       }
-      
+
     }
   }
   pixelShield.show();
@@ -194,28 +209,34 @@ void led_off() {
 
 /*
   calculate the number of pixels to fill per column
-  Distance from rangefinder, Size of range for color, Minimum distance for color
+  Object distance from rangefinder, Size of range for color, Minimum distance for color
 */
-int columnFill(int distance, int range, int colorDistance) {
+int columnFill(int objectDistance, int range, int colorDistance) {
+  // TODO: there's gotta be a use for map() in here...
   // figure out how far into the color's range we have traveled
-  int rangeConsumed = distance - (colorDistance + range);
-  // at 8 pixels per column, each pixel is 12.5% of the column
+  int rangeConsumed = objectDistance - (colorDistance + range);
+  /* 
+  apprarently the arduino abs() function cannot be used as part of any other calculation
+  the results will be incorrect
+  isolate it
+  */
   float usableRangeConsumed = abs(rangeConsumed);
-  float columnHeight = ((usableRangeConsumed/range)*100)/12.5;
+  //                         percentage of range consumed     percent to fill per pixel
+  float columnFillHeight = ((usableRangeConsumed/range)*100)/(100/LCD_COLUMNS);
 
-  DEBUG_PRINT(range); DEBUG_PRINT(" color range"); DEBUG_PRINTLN();
-  DEBUG_PRINT(colorDistance); DEBUG_PRINT(" min colorDistance"); DEBUG_PRINTLN();
-  DEBUG_PRINT(rangeConsumed); DEBUG_PRINT(" range consumed"); DEBUG_PRINTLN();
-  DEBUG_PRINT(usableRangeConsumed); DEBUG_PRINT(" abs rangeConsumed"); DEBUG_PRINTLN();
-  DEBUG_PRINT(columnHeight); DEBUG_PRINT(" columnHeight from columnFill"); DEBUG_PRINTLN();
+  DEBUG_PRINT("min colorDistance: "); DEBUG_PRINT(colorDistance); DEBUG_PRINTLN();
+  DEBUG_PRINT("color range: "); DEBUG_PRINT(range);  DEBUG_PRINT("; ");
+  DEBUG_PRINT(rangeConsumed); DEBUG_PRINT(" (");
+  DEBUG_PRINT(usableRangeConsumed); DEBUG_PRINT(") range consumed"); DEBUG_PRINTLN();
+  DEBUG_PRINT("columnFillHeight from columnFill: "); DEBUG_PRINT(columnFillHeight); DEBUG_PRINT("; ");
 
-  if (columnHeight < 1) {
+  if (columnFillHeight < 1) {
     return 1;
-  } 
-  else if (columnHeight > 8) {
-    return 8;
-  } 
+  }
+  else if (columnFillHeight > LCD_COLUMNS) {
+    return LCD_COLUMNS;
+  }
   else {
-    return columnHeight;
+    return columnFillHeight;
   }
 }
