@@ -9,12 +9,10 @@
 // enable debug logging? uncomment this
 //#define DEBUG
 
-/***********
-* pin setups
-***********/
 // ultrasonic sensor setup
 #define TRIGGER_PIN    11
 #define ECHO_PIN       12
+
 // initialize the LED shield
 #define LED_DRIVER_PIN 13
 
@@ -44,13 +42,7 @@ const int YELLOW_RANGE = GREEN_DISTANCE - YELLOW_DISTANCE;
 const int RED_RANGE = YELLOW_DISTANCE - STOP_DISTANCE;
 
 // set color shortcuts for LED lighting
-const int OFF    = 0;
-const int GREEN  = 1;
-const int YELLOW = 2;
-const int RED    = 3;
-
-// the max number of duplicate measurements we'll accept before turning the NeoPixel off
-const int MAX_DUPLICATES = 120;
+enum color { OFF, GREEN, YELLOW, RED }; 
 
 // easy debug output
 #ifdef DEBUG
@@ -84,11 +76,7 @@ int duration = 0;
 // distance in CM as calculated from the rangefinder
 int distance = 0;
 // number of pings to measure for the input smoother
-int iterations = 7;
-// an accumulator to turn the NeoPixel off after X identical readings
-int duplicate_accumulator = 0;
-// capture the previous measurement for the accumulator
-int last_reading = 0;
+int iterations = 5;
 // the number of pixels available in the NeoPixel
 int pixleCount = pixelShield.numPixels();
 // the number of pixels per row to fill when presented as a bar graph
@@ -114,68 +102,54 @@ void loop() {
 
   duration = sonar.ping_median(iterations); // get time-of-flight measurements from the sensor
   distance = sonar.convert_cm(duration);    // convert duration measurement to CM
+  
+  DEBUG_PRINT("distance: "); DEBUG_PRINT(distance); DEBUG_PRINT(" cm; "); DEBUG_PRINTLN();
 
-  DEBUG_PRINT("distance: "); DEBUG_PRINT(distance); DEBUG_PRINT(" cm; ");
-
-  if (last_reading == distance) {
-    duplicate_accumulator++;
-  } else {
-    duplicate_accumulator = 0;
-  }
-
-  if (duplicate_accumulator > MAX_DUPLICATES) {
-    DEBUG_PRINT("HIT MAX DUPLICATES WITH COUNT "); DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINTLN();
-    led_off();
-  }
-  else if (distance > MAX_DISTANCE || distance < SHUTOFF_DISTANCE) {
-    led_off();
-  }
-  else if (distance >= GREEN_DISTANCE) {
-    columnHeight = columnFill(distance, GREEN_RANGE, GREEN_DISTANCE);
-    DEBUG_PRINT("columnHeight: "); DEBUG_PRINT(columnHeight); DEBUG_PRINTLN();
-    light_led(GREEN, columnHeight, 5);
-  }
-  else if (distance >= YELLOW_DISTANCE) {
-    columnHeight = columnFill(distance, YELLOW_RANGE, YELLOW_DISTANCE);
-    DEBUG_PRINT("columnHeight: "); DEBUG_PRINT(columnHeight); DEBUG_PRINTLN();
-    light_led(YELLOW, columnHeight, 10);
-  }
-  else if (distance >= STOP_DISTANCE) {
-    columnHeight = columnFill(distance, RED_RANGE, STOP_DISTANCE);
-    DEBUG_PRINT("columnHeight: "); DEBUG_PRINT(columnHeight); DEBUG_PRINTLN();
-    light_led(RED, columnHeight, 15);
-  }
-  else if (distance >= SHUTOFF_DISTANCE) {
-    stopp();
-  }
+  if (inRange(distance, SHUTOFF_DISTANCE, MAX_DISTANCE)) {
+    if (inRange(distance, STOP_DISTANCE, MAX_DISTANCE)) {
+      if (distance >= GREEN_DISTANCE) {
+        columnHeight = columnFill(distance, GREEN_RANGE, GREEN_DISTANCE);
+        light_led(GREEN, columnHeight);
+      }
+      else if (distance >= YELLOW_DISTANCE) {
+        columnHeight = columnFill(distance, YELLOW_RANGE, YELLOW_DISTANCE);
+        light_led(YELLOW, columnHeight);
+      }
+      else if (distance >= STOP_DISTANCE) {
+        columnHeight = columnFill(distance, RED_RANGE, STOP_DISTANCE);
+        light_led(RED, columnHeight);
+      }
+      DEBUG_PRINT("columnHeight: "); DEBUG_PRINT(columnHeight); DEBUG_PRINTLN();
+    }
+    else { // if (distance >= SHUTOFF_DISTANCE)
+      stopp();
+    }
+  } 
   else {
     led_off();
   }
-  last_reading = distance;
-  DEBUG_PRINT(duplicate_accumulator); DEBUG_PRINT(" duplicates"); DEBUG_PRINTLN(); DEBUG_PRINTLN();
 }
 
 /* Set the color for the pixelshield
-  Colors:
-    OFF   : 0
-    GREEN : 1
-    YELLOW: 2
-    RED   : 3
+  Colors    : from enum color
   Brightness: 1-255
 */
-void light_led(int color, int columnHeight, int brightness) {
-  int red = 0; int green = 0; int blue = 0;
+void light_led(int color, int columnHeight) {
+  int r = 0; int g = 0; int b = 0;
+  
+  // increase brightness as we get closer to stopping
+  int brightness = color * 5;
 
   switch (color) {
-    case 1: // green
-      green = brightness;
+    case GREEN:
+      g = brightness;
       break;
-    case 2: // yellow
-      red = brightness;
-      green = brightness;
+    case YELLOW:
+      r = brightness;
+      g = brightness;
       break;
-    case 3: // red
-      red = brightness;
+    case RED:
+      r = brightness;
       break;
     default:
       break;
@@ -185,7 +159,7 @@ void light_led(int color, int columnHeight, int brightness) {
     for (int j = 0; j < LCD_COLUMNS; j++) {
       int pixel = (i * LCD_COLUMNS) + j;
       if (j < columnHeight) {
-        pixelShield.setPixelColor(pixel, pixelShield.Color(red, green, blue));
+        pixelShield.setPixelColor(pixel, pixelShield.Color(r, g, b));
       } else {
         pixelShield.setPixelColor(pixel, pixelShield.Color(0, 0, 0));
       }
@@ -197,14 +171,14 @@ void light_led(int color, int columnHeight, int brightness) {
 
 /* Flash red, rapidly */
 void stopp() {
-  light_led(RED, 8, 30);
+  light_led(RED, 8);
   delay(PING_DELAY);
   led_off();
 }
 
 /* Turn the pixelshield off */
 void led_off() {
-  light_led(OFF, 0, 0);
+  light_led(OFF, 0);
 }
 
 /*
@@ -230,4 +204,9 @@ int columnFill(int objectDistance, int range, int colorDistance) {
   DEBUG_PRINT("columnFillHeight from columnFill: "); DEBUG_PRINT(columnFillHeight); DEBUG_PRINT("; ");
 
   return constrain(columnFillHeight, 1, LCD_COLUMNS);
+}
+
+// Check if value is in range
+bool inRange(int d, int rangeMin, int rangeMax) {
+  return d >= rangeMin && d <= rangeMax;
 }
