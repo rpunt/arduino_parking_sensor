@@ -142,14 +142,14 @@ void light_led(int color, int columnHeight) {
 
   switch (color) {
     case GREEN:
-      g = 5;
+      g = brightness;
       break;
     case YELLOW:
-      r = 10;
-      g = 10;
+      r = brightness;
+      g = brightness;
       break;
     case RED:
-      r = 15;
+      r = brightness;
       break;
     default:
       break;
