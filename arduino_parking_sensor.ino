@@ -229,5 +229,5 @@ int columnFill(int objectDistance, int range, int colorDistance) {
   DEBUG_PRINT(usableRangeConsumed); DEBUG_PRINT(") range consumed"); DEBUG_PRINTLN();
   DEBUG_PRINT("columnFillHeight from columnFill: "); DEBUG_PRINT(columnFillHeight); DEBUG_PRINT("; ");
 
-  return constrain(columnFillHeight, 1, 8);
+  return constrain(columnFillHeight, 1, LCD_COLUMNS);
 }
