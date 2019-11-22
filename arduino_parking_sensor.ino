@@ -102,8 +102,8 @@ void loop() {
 
   duration = sonar.ping_median(iterations); // get time-of-flight measurements from the sensor
   distance = sonar.convert_cm(duration);    // convert duration measurement to CM
-
-  DEBUG_PRINT("distance: "); DEBUG_PRINT(distance); DEBUG_PRINT(" cm; ");
+  
+  DEBUG_PRINT("distance: "); DEBUG_PRINT(distance); DEBUG_PRINT(" cm; "); DEBUG_PRINTLN();
 
   if (inRange(distance, SHUTOFF_DISTANCE, MAX_DISTANCE)) {
     if (inRange(distance, STOP_DISTANCE, MAX_DISTANCE)) {
