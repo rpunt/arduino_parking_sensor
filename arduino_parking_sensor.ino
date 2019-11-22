@@ -212,7 +212,6 @@ void led_off() {
   Object distance from rangefinder, Size of range for color, Minimum distance for color
 */
 int columnFill(int objectDistance, int range, int colorDistance) {
-  // TODO: there's gotta be a use for map() in here...
   // figure out how far into the color's range we have traveled
   int rangeConsumed = objectDistance - (colorDistance + range);
   /* 
@@ -221,8 +220,8 @@ int columnFill(int objectDistance, int range, int colorDistance) {
   isolate it
   */
   float usableRangeConsumed = abs(rangeConsumed);
-  //                         percentage of range consumed     percent to fill per pixel
-  float columnFillHeight = ((usableRangeConsumed/range)*100)/(100/LCD_COLUMNS);
+  float percentConsumed = (usableRangeConsumed/range)*100;
+  float columnFillHeight = map(percentConsumed, 1, 100, 1, 8);
 
   DEBUG_PRINT("min colorDistance: "); DEBUG_PRINT(colorDistance); DEBUG_PRINTLN();
   DEBUG_PRINT("color range: "); DEBUG_PRINT(range);  DEBUG_PRINT("; ");
@@ -230,13 +229,5 @@ int columnFill(int objectDistance, int range, int colorDistance) {
   DEBUG_PRINT(usableRangeConsumed); DEBUG_PRINT(") range consumed"); DEBUG_PRINTLN();
   DEBUG_PRINT("columnFillHeight from columnFill: "); DEBUG_PRINT(columnFillHeight); DEBUG_PRINT("; ");
 
-  if (columnFillHeight < 1) {
-    return 1;
-  }
-  else if (columnFillHeight > LCD_COLUMNS) {
-    return LCD_COLUMNS;
-  }
-  else {
-    return columnFillHeight;
-  }
+  return constrain(columnFillHeight, 1, 8);
 }
