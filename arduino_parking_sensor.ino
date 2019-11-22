@@ -22,7 +22,7 @@
 const int LCD_COLUMNS = 8;
 const int LCD_ROWS    = 5;
 
-// delay between pings
+// delay between pings in ms; 29ms should be the shortest delay between pings.
 const int PING_DELAY = 100;
 
 // distance measurement limits in CM
