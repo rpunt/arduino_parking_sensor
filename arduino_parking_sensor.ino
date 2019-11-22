@@ -138,7 +138,7 @@ void light_led(int color, int columnHeight) {
   int r = 0; int g = 0; int b = 0;
   
   // increase brightness as we get closer to stopping
-  brightness = color * 5;
+  int brightness = color * 5;
 
   switch (color) {
     case GREEN:
