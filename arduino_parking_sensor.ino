@@ -42,7 +42,7 @@ const int YELLOW_RANGE = GREEN_DISTANCE - YELLOW_DISTANCE;
 const int RED_RANGE = YELLOW_DISTANCE - STOP_DISTANCE;
 
 // set color shortcuts for LED lighting
-enum color { OFF, GREEN, YELLOW, RED }; 
+enum color { OFF, GREEN, YELLOW, RED };
 
 // easy debug output
 #ifdef DEBUG
@@ -102,7 +102,7 @@ void loop() {
 
   duration = sonar.ping_median(iterations); // get time-of-flight measurements from the sensor
   distance = sonar.convert_cm(duration);    // convert duration measurement to CM
-  
+
   DEBUG_PRINT("distance: "); DEBUG_PRINT(distance); DEBUG_PRINT(" cm; "); DEBUG_PRINTLN();
 
   if (inRange(distance, SHUTOFF_DISTANCE, MAX_DISTANCE)) {
@@ -124,7 +124,7 @@ void loop() {
     else { // if (distance >= SHUTOFF_DISTANCE)
       stopp();
     }
-  } 
+  }
   else {
     led_off();
   }
@@ -136,7 +136,7 @@ void loop() {
 */
 void light_led(int color, int columnHeight) {
   int r = 0; int g = 0; int b = 0;
-  
+
   // increase brightness as we get closer to stopping
   int brightness = color * 5;
 
@@ -188,7 +188,7 @@ void led_off() {
 int columnFill(int objectDistance, int range, int colorDistance) {
   // figure out how far into the color's range we have traveled
   int rangeConsumed = objectDistance - (colorDistance + range);
-  /* 
+  /*
   apprarently the arduino abs() function cannot be used as part of any other calculation
   the results will be incorrect
   isolate it
