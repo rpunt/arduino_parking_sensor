@@ -5,7 +5,8 @@
             "includePath": [
                 "C:\\Program Files (x86)\\Arduino\\tools\\**",
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\**",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceRoot}/../libraries/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -22,14 +23,13 @@
                 "ARDUINO=10800"
             ],
             "includePath": [
-                "/Users/ryan/Documents/Arduino/libraries/NewPing/src",
                 "${workspaceRoot}",
+                "${workspaceRoot}/../libraries/**",
                 "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/**",
                 "/Applications/Arduino.app/Contents/Java/tools/**",
                 "/Applications/hardware/tools/**",
                 "/Applications/libraries/**",
-                "/Users/ryan/Documents/Arduino/hardware/tools/**",
-                "/Users/ryan/Documents/Arduino/libraries/**"
+                "${workspaceRoot}/../hardware/tools/**"
             ],
             "forcedInclude": [
                 "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/Arduino.h"
