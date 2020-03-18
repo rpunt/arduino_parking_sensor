@@ -77,8 +77,6 @@ int duration = 0;
 int distance = 0;
 // number of pings to measure for the input smoother
 int iterations = 5;
-// the number of pixels available in the NeoPixel
-int pixleCount = pixelShield.numPixels();
 // the number of pixels per row to fill when presented as a bar graph
 int columnHeight = 0;
 
