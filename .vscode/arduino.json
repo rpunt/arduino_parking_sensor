@@ -3,5 +3,5 @@
     "sketch": "arduino_parking_sensor.ino",
     "output": "../build",
     "debugger": "jlink",
-    "port": "COM4"
+    "port": "COM3"
 }
