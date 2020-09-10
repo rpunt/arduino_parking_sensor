@@ -7,14 +7,17 @@
 #endif
 
 // enable debug logging? uncomment this
-//#define DEBUG
+// #define DEBUG
 
 // ultrasonic sensor setup
 #define TRIGGER_PIN    11
 #define ECHO_PIN       12
 
 // initialize the LED shield
-#define LED_DRIVER_PIN 13
+// Keyestudio 2812
+// #define LED_DRIVER_PIN 13
+// Adafruit_NeoPixel
+#define LED_DRIVER_PIN 6
 
 // LED shield specs
 const int LCD_COLUMNS = 8;
@@ -69,7 +72,7 @@ enum color { OFF, GREEN, YELLOW, RED };
 */
 Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel(40, LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
 
-NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
+NewPing sonar = NewPing(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
 // time-of-flight measurement from the rangefinder
 int duration = 0;
