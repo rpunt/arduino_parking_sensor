@@ -8,15 +8,27 @@
 
 // enable debug logging? uncomment this
 // #define DEBUG
+<<<<<<< HEAD
+=======
+
+// easy debugging on distance
+#define DEBUG_DISTANCE 120
+>>>>>>> a63dc1b (various fixes)
 
 // ultrasonic sensor setup
 #define TRIGGER_PIN    11
 #define ECHO_PIN       12
 
 // initialize the LED shield
+<<<<<<< HEAD
 // Keyestudio 2812
 // #define LED_DRIVER_PIN 13
 // Adafruit_NeoPixel
+=======
+// Keyestudio shield
+//#define LED_DRIVER_PIN 13
+// Adafruit Neopixel Shield
+>>>>>>> a63dc1b (various fixes)
 #define LED_DRIVER_PIN 6
 
 // LED shield specs
@@ -100,11 +112,13 @@ void setup() {
 
 void loop() {
   delay(PING_DELAY);
-
   duration = sonar.ping_median(iterations); // get time-of-flight measurements from the sensor
   distance = sonar.convert_cm(duration);    // convert duration measurement to CM
+  #ifdef DEBUG
+  distance = DEBUG_DISTANCE;
+  #endif
 
-  DEBUG_PRINT("distance: "); DEBUG_PRINT(distance); DEBUG_PRINT(" cm; "); DEBUG_PRINTLN();
+  DEBUG_PRINTLN(); DEBUG_PRINT("distance: "); DEBUG_PRINT(distance); DEBUG_PRINT(" cm; "); DEBUG_PRINTLN();
 
   if (inRange(distance, SHUTOFF_DISTANCE, MAX_DISTANCE)) {
     if (inRange(distance, STOP_DISTANCE, MAX_DISTANCE)) {
@@ -122,7 +136,7 @@ void loop() {
       }
       DEBUG_PRINT("columnHeight: "); DEBUG_PRINT(columnHeight); DEBUG_PRINTLN();
     }
-    else { // if (distance >= SHUTOFF_DISTANCE)
+    else { // if (distance < STOP_DISTANCE)
       stopp();
     }
   }
@@ -131,7 +145,8 @@ void loop() {
   }
 }
 
-/* Set the color for the pixelshield
+/*
+  Set the color for the pixelshield
   Colors    : from enum color
   Brightness: 1-255
 */
@@ -190,9 +205,9 @@ int columnFill(int objectDistance, int range, int colorDistance) {
   // figure out how far into the color's range we have traveled
   int rangeConsumed = objectDistance - (colorDistance + range);
   /*
-  apprarently the arduino abs() function cannot be used as part of any other calculation
-  the results will be incorrect
-  isolate it
+    apprarently the arduino abs() function cannot be used as part of any other calculation
+    the results will be incorrect
+    isolate it
   */
   float usableRangeConsumed = abs(rangeConsumed);
   float percentConsumed = (usableRangeConsumed/range)*100;
