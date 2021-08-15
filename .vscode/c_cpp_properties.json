@@ -15,9 +15,6 @@
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\**",
                 "C:\\Program Files (x86)\\Arduino\\tools\\**"
             ],
-            "forcedInclude": [
-                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
-            ],
             "cStandard": "c11",
             "cppStandard": "c++17",
             "defines": [
@@ -42,10 +39,7 @@
                 "${workspaceRoot}",
                 "${workspaceRoot}/../libraries/**",
                 "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/**",
-                "/Applications/Arduino.app/Contents/Java/tools/**",
-                "/Applications/hardware/tools/**",
-                "/Applications/libraries/**",
-                "${workspaceRoot}/../hardware/tools/**"
+                "/Applications/Arduino.app/Contents/Java/tools/**"
             ],
             "forcedInclude": [
                 "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/Arduino.h"
@@ -590,6 +584,5 @@
                 "USBCON"
             ]
         }
-    ],
-    "version": 4
+    ]
 }
