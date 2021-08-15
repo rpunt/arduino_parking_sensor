@@ -3,5 +3,5 @@
     "sketch": "arduino_parking_sensor.ino",
     "output": "../build",
     "debugger": "jlink",
-    "port": "COM3"
+    "port": "/dev/cu.usbmodem2201"
 }
