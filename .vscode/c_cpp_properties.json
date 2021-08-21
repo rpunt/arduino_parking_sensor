@@ -34,8 +34,6 @@
             "compilerArgs": [],
             "intelliSenseMode": "clang-arm64",
             "includePath": [
-                "/Users/ryan/Documents/Arduino/libraries/NewPing/src",
-                "/Users/ryan/Documents/Arduino/libraries/**",
                 "${workspaceRoot}",
                 "${workspaceRoot}/../libraries/**",
                 "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/**",
