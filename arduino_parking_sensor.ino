@@ -8,27 +8,18 @@
 
 // enable debug logging? uncomment this
 // #define DEBUG
-<<<<<<< HEAD
-=======
 
 // easy debugging on distance
 #define DEBUG_DISTANCE 120
->>>>>>> a63dc1b (various fixes)
 
 // ultrasonic sensor setup
 #define TRIGGER_PIN    11
 #define ECHO_PIN       12
 
 // initialize the LED shield
-<<<<<<< HEAD
-// Keyestudio 2812
-// #define LED_DRIVER_PIN 13
-// Adafruit_NeoPixel
-=======
 // Keyestudio shield
 //#define LED_DRIVER_PIN 13
 // Adafruit Neopixel Shield
->>>>>>> a63dc1b (various fixes)
 #define LED_DRIVER_PIN 6
 
 // LED shield specs
