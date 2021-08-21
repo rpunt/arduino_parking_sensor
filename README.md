@@ -2,6 +2,8 @@
 
 An Arduino-based parking sensor
 
+[![CI](https://github.com/rpunt/arduino_parking_sensor/actions/workflows/lint.yml/badge.svg)](https://github.com/rpunt/arduino_parking_sensor/actions/workflows/lint.yml)
+
 ## Sensors
 
 * [HC SR04 ultrasonic distance sensor](https://www.amazon.com/gp/product/B01GNEHJNC/ref=ppx_yo_dt_b_asin_title_o02_s00?ie=UTF8&psc=1) for distance calculations
