@@ -73,8 +73,7 @@ enum color { OFF, GREEN, YELLOW, RED };
   Example syntax:
     Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel(40, LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
 */
-// TODO: #4 shouldn't the '40' here be col * row?
-Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel(40, LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel((LED_COLUMNS * LED_ROWS), LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
 
 NewPing sonar = NewPing(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
