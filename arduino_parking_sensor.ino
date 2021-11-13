@@ -73,6 +73,7 @@ enum color { OFF, GREEN, YELLOW, RED };
   Example syntax:
     Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel(40, LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
 */
+// TODO: #4 shouldn't the '40' here be col * row?
 Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel(40, LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
 
 NewPing sonar = NewPing(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
@@ -170,7 +171,6 @@ void light_led(int color, int columnHeight) {
       } else {
         pixelShield.setPixelColor(pixel, pixelShield.Color(0, 0, 0));
       }
-
     }
   }
   pixelShield.show();
@@ -201,8 +201,8 @@ int columnFill(int objectDistance, int range, int colorDistance) {
     isolate it
   */
   float usableRangeConsumed = abs(rangeConsumed);
-  float percentConsumed = (usableRangeConsumed/range)*100;
-  float columnFillHeight = map(percentConsumed, 1, 100, 1, 8);
+  float percentConsumed = (usableRangeConsumed / range) * 100;
+  float columnFillHeight = map(percentConsumed, 1, 100, 1, LCD_COLUMNS);
 
   DEBUG_PRINT("min colorDistance: "); DEBUG_PRINT(colorDistance); DEBUG_PRINTLN();
   DEBUG_PRINT("color range: "); DEBUG_PRINT(range);  DEBUG_PRINT("; ");
