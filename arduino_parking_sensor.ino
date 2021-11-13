@@ -23,8 +23,8 @@
 #define LED_DRIVER_PIN 6
 
 // LED shield specs
-const int LCD_COLUMNS = 8;
-const int LCD_ROWS    = 5;
+const int LED_COLUMNS = 8;
+const int LED_ROWS    = 5;
 
 // delay between pings in ms; 29ms should be the shortest delay between pings.
 const int PING_DELAY = 100;
@@ -73,8 +73,7 @@ enum color { OFF, GREEN, YELLOW, RED };
   Example syntax:
     Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel(40, LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
 */
-// TODO: #4 shouldn't the '40' here be col * row?
-Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel(40, LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixelShield = Adafruit_NeoPixel((LED_COLUMNS * LED_ROWS), LED_DRIVER_PIN, NEO_GRB + NEO_KHZ800);
 
 NewPing sonar = NewPing(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
@@ -163,9 +162,9 @@ void light_led(int color, int columnHeight) {
       break;
   }
 
-  for (int i = 0; i < LCD_ROWS; i++) {
-    for (int j = 0; j < LCD_COLUMNS; j++) {
-      int pixel = (i * LCD_COLUMNS) + j;
+  for (int i = 0; i < LED_ROWS; i++) {
+    for (int j = 0; j < LED_COLUMNS; j++) {
+      int pixel = (i * LED_COLUMNS) + j;
       if (j < columnHeight) {
         pixelShield.setPixelColor(pixel, pixelShield.Color(r, g, b));
       } else {
@@ -202,7 +201,7 @@ int columnFill(int objectDistance, int range, int colorDistance) {
   */
   float usableRangeConsumed = abs(rangeConsumed);
   float percentConsumed = (usableRangeConsumed / range) * 100;
-  float columnFillHeight = map(percentConsumed, 1, 100, 1, LCD_COLUMNS);
+  float columnFillHeight = map(percentConsumed, 1, 100, 1, LED_COLUMNS);
 
   DEBUG_PRINT("min colorDistance: "); DEBUG_PRINT(colorDistance); DEBUG_PRINTLN();
   DEBUG_PRINT("color range: "); DEBUG_PRINT(range);  DEBUG_PRINT("; ");
@@ -210,7 +209,7 @@ int columnFill(int objectDistance, int range, int colorDistance) {
   DEBUG_PRINT(usableRangeConsumed); DEBUG_PRINT(") range consumed"); DEBUG_PRINTLN();
   DEBUG_PRINT("columnFillHeight from columnFill: "); DEBUG_PRINT(columnFillHeight); DEBUG_PRINT("; ");
 
-  return constrain(columnFillHeight, 1, LCD_COLUMNS);
+  return constrain(columnFillHeight, 1, LED_COLUMNS);
 }
 
 // Check if value is in range
