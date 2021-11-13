@@ -162,10 +162,10 @@ void light_led(int color, int columnHeight) {
       break;
   }
 
-  for (int i = 0; i < LED_ROWS; i++) {
-    for (int j = 0; j < LED_COLUMNS; j++) {
-      int pixel = (i * LED_COLUMNS) + j;
-      if (j < columnHeight) {
+  for (int x = 0; x < LED_ROWS; x++) {
+    for (int y = 0; y < LED_COLUMNS; y++) {
+      int pixel = (x * LED_COLUMNS) + y;
+      if (y < columnHeight) {
         pixelShield.setPixelColor(pixel, pixelShield.Color(r, g, b));
       } else {
         pixelShield.setPixelColor(pixel, pixelShield.Color(0, 0, 0));
